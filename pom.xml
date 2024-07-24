@@ -5,9 +5,11 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.3.2</version>
+        <version>3.3.2</version> <!-- JDK 17 bilan mos keladigan versiyani tanlang -->
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
+
+
     <groupId>tech.uzpro</groupId>
     <artifactId>todo-app</artifactId>
     <version>0.0.1-SNAPSHOT</version>
@@ -28,8 +30,9 @@
     </scm>
     <properties>
         <java.version>17</java.version>
-        <kotlin.version>2.0.0</kotlin.version>
+        <kotlin.version>1.6.10</kotlin.version>
     </properties>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -66,21 +69,21 @@
             <scope>runtime</scope>
             <optional>true</optional>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.h2database</groupId>-->
-<!--            <artifactId>h2</artifactId>-->
-<!--            <scope>runtime</scope>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
         <dependency>
             <groupId>io.micrometer</groupId>
             <artifactId>micrometer-registry-prometheus</artifactId>
             <scope>runtime</scope>
         </dependency>
-        <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <scope>runtime</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.postgresql</groupId>-->
+<!--            <artifactId>postgresql</artifactId>-->
+<!--            <scope>runtime</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
@@ -189,5 +192,4 @@
             </plugin>
         </plugins>
     </build>
-
 </project>
