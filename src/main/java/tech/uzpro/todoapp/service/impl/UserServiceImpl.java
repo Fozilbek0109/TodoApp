@@ -8,10 +8,11 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tech.uzpro.todoapp.domain.User;
+import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponceUserDTO;
 import tech.uzpro.todoapp.repos.TaskRepository;
 import tech.uzpro.todoapp.repos.UserRepository;
 import tech.uzpro.todoapp.service.UserService;
-
 import java.nio.charset.StandardCharsets;
 import java.util.Base64;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final TaskRepository taskRepository;
 
-    public UserServiceImpl(final UserRepository userRepository,final TaskRepository taskRepository) {
+    public UserServiceImpl(final UserRepository userRepository, final TaskRepository taskRepository) {
         this.userRepository = userRepository;
         this.taskRepository = taskRepository;
     }
@@ -33,6 +34,12 @@ public class UserServiceImpl implements UserService {
         if (requestHeader != null && requestHeader.startsWith("Bearer ")) {
             String token = requestHeader.substring(7);
 //            TODO: Implement JWT token verification
+            if (userRepository.existsByToken(token)) {
+                if (userRepository.findByToken(token).isPresent()) {
+                    ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(userRepository.findByToken(token).get()).build();
+                    return ResponseEntity.ok(responceUserDTO);
+                }
+            }
         }
         return null;
     }
@@ -41,9 +48,11 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<?> getUserById(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
-            return ResponseEntity.ok(optionalUser.get());
+            ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(optionalUser.get()).build();
+            return ResponseEntity.ok(responceUserDTO);
         }
-        return ResponseEntity.badRequest().body("User not found");
+        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
+        return ResponseEntity.badRequest().body(responceUserDTO);
     }
 
     @Override
@@ -59,10 +68,12 @@ public class UserServiceImpl implements UserService {
             User user = getUserByToken(tokenByHttpServletRequest);
             if (user != null) {
                 user.setEmail(email);
-                return ResponseEntity.ok(userRepository.save(user));
+                ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Email updated").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(userRepository.save(user)).build();
+                return ResponseEntity.ok(responceUserDTO);
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responceUserDTO);
     }
 
     @Override
@@ -74,10 +85,12 @@ public class UserServiceImpl implements UserService {
             User user = getUserByToken(tokenByHttpServletRequest);
             if (user != null) {
                 user.setPassword(decodedPassword);
-                return ResponseEntity.ok(userRepository.save(user));
+                ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Password updated").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(userRepository.save(user)).build();
+                return ResponseEntity.ok(responceUserDTO);
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responceUserDTO);
     }
 
     @Override
@@ -87,10 +100,12 @@ public class UserServiceImpl implements UserService {
             User user = getUserByToken(tokenByHttpServletRequest);
             if (user != null) {
                 user.setUsername(username);
-                return ResponseEntity.ok(userRepository.save(user));
+                ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Username updated").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(userRepository.save(user)).build();
+                return ResponseEntity.ok(responceUserDTO);
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responceUserDTO);
     }
 
     @Override
@@ -100,10 +115,12 @@ public class UserServiceImpl implements UserService {
             User user = getUserByToken(tokenByHttpServletRequest);
             if (user != null) {
                 userRepository.delete(user);
-                return ResponseEntity.ok("User deleted");
+                ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User deleted").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).build();
+                return ResponseEntity.ok(responceUserDTO);
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responceUserDTO);
     }
 
     @Override
@@ -111,9 +128,11 @@ public class UserServiceImpl implements UserService {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             userRepository.delete(optionalUser.get());
-            return ResponseEntity.ok("User deleted");
+            ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User deleted").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).build();
+            return ResponseEntity.ok(responceUserDTO);
         }
-        return ResponseEntity.badRequest().body("User not found");
+        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
+        return ResponseEntity.badRequest().body(responceUserDTO);
     }
 
     @Override
@@ -122,19 +141,29 @@ public class UserServiceImpl implements UserService {
         if (tokenByHttpServletRequest != null) {
             User user = getUserByToken(tokenByHttpServletRequest);
             if (user != null) {
-                return ResponseEntity.ok(taskRepository.findAllByUserId(user.getId()));
+                ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder().message("Tasks found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).tasks(taskRepository.findAllByUserId(user.getId())).build();
+                return ResponseEntity.ok(responceTasksDTO);
             }
         }
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Unauthorized");
+        ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responceTasksDTO);
     }
 
     @Override
     public ResponseEntity<?> getUserTasks(Long userId) {
-        return ResponseEntity.ok(taskRepository.findAllByUserId(userId));
+        if (!userRepository.existsById(userId)) {
+            ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
+            return ResponseEntity.badRequest().body(responceTasksDTO);
+        }
+        ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder().message("Tasks found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).tasks(taskRepository.findAllByUserId(userId)).build();
+        return ResponseEntity.ok(responceTasksDTO);
     }
 
     public User getUserByToken(String token) {
-//        TODO: Implement JWT token verification
+        if (userRepository.existsByToken(token)) {
+            if (userRepository.findByToken(token).isPresent())
+                return userRepository.findByToken(token).get();
+        }
         return null;
     }
 

@@ -5,6 +5,8 @@ import lombok.Data;
 
 @Data
 public class CreatedTaskDTO {
+    @NotBlank(message = "User Id is required")
+    private Long userId;
 
     @NotBlank(message = "Title is required")
     private String title;
@@ -14,7 +16,6 @@ public class CreatedTaskDTO {
     @NotBlank(message = "Priority is required")
     private String priority;
 
-    @NotBlank(message = "Due date is required")
     private Long dueDate;
 
     private boolean completed;

@@ -50,4 +50,7 @@ public class User {
     @Column(name = "updated_at")
     @UpdateTimestamp
     private Timestamp updatedAt;
+
+    @Column(name = "token")
+    private String token;
 }
