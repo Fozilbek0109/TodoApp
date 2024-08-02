@@ -26,5 +26,5 @@ public interface AuthService {
 
     ResponseEntity<?> forgotPassword(String email);
 
-    ResponseEntity<?> resetPassword(String email,String userName, String password);
+    ResponseEntity<?> resetPassword(String email,int code, String password);
 }

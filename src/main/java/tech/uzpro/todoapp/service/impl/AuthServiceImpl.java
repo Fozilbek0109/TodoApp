@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 //import tech.uzpro.todoapp.config.JwtConfig;
+import org.springframework.web.bind.annotation.PostMapping;
 import tech.uzpro.todoapp.config.SendMailService;
 import tech.uzpro.todoapp.domain.User;
 import tech.uzpro.todoapp.model.enums.RoleName;
@@ -244,12 +245,14 @@ public class AuthServiceImpl implements AuthService {
         return isSend.get() ? ResponseEntity.ok(emailSent) : ResponseEntity.badRequest().body(userNotFound);
     }
 
+
+
     @Override
-    public ResponseEntity<?> resetPassword(String email, String userName, String password) {
+    public ResponseEntity<?> resetPassword(String email, int code, String password) {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
-            if (user.getUsername().equals(userName)) {
+            if (user.getVerificationCode() == code) {
                 user.setPassword(password);
                 userRepository.save(user);
                 ResponeseDTO passwordResetSuccessfully = ResponeseDTO.builder()
