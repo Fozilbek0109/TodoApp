@@ -12,19 +12,19 @@ public interface AuthService {
 
     ResponseEntity<?> login(LoginDTO dto);
 
-    default ResponseEntity<?> refreshToken(String refreshToken) {
-        return null;
-    }
+//    default ResponseEntity<?> refreshToken(String refreshToken) {
+//        return null;
+//    }
 
-    default ResponseEntity<?> logout(String refreshToken) {
-        return null;
-    }
-
-    default ResponseEntity<?> logoutAll(String refreshToken) {
-        return null;
-    }
+//    default ResponseEntity<?> logout(String refreshToken) {
+//        return null;
+//    }
+//
+//    default ResponseEntity<?> logoutAll(String refreshToken) {
+//        return null;
+//    }
 
     ResponseEntity<?> forgotPassword(String email);
 
-    ResponseEntity<?> resetPassword(String email, String token, String password);
+    ResponseEntity<?> resetPassword(String email,String userName, String password);
 }

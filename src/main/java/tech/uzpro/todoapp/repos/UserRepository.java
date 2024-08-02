@@ -19,7 +19,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByEmail(String email);
 
-    boolean existsByToken(String token);
+//    boolean existsByToken(String token);
 
-    Optional<User> findByToken(String token);
+//    Optional<User> findByToken(String token);
 }

@@ -32,7 +32,7 @@ public class User {
     @Column(name = "email", nullable = false, unique = true, length = 100)
     private String email;
 
-    @Column(nullable = false, length = 50)
+    @Column(nullable = false)
     private String password;
 
     @ElementCollection(fetch = FetchType.EAGER)
@@ -51,6 +51,7 @@ public class User {
     @UpdateTimestamp
     private Timestamp updatedAt;
 
-    @Column(name = "token")
-    private String token;
+//    @Column(name = "token")
+//    private String token;
+
 }

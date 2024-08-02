@@ -1,6 +1,5 @@
 package tech.uzpro.todoapp.rest;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.uzpro.todoapp.service.UserService;
@@ -29,15 +28,15 @@ public class UserResource {
         return ResponseEntity.ok(userService.getUserById(id));
     }
 
-    @GetMapping("/me")
-    public ResponseEntity<?> getMe(HttpServletRequest request) {
-        return ResponseEntity.ok(userService.getMe(request));
-    }
+//    @GetMapping("/me")
+//    public ResponseEntity<?> getMe(HttpServletRequest request) {
+//        return ResponseEntity.ok(userService.getMe(request));
+//    }
 
-    @GetMapping("/me/tasks")
-    public ResponseEntity<?> getMyTasks(HttpServletRequest request) {
-        return ResponseEntity.ok(userService.getMyTasks(request));
-    }
+//    @GetMapping("/me/tasks")
+//    public ResponseEntity<?> getMyTasks(HttpServletRequest request) {
+//        return ResponseEntity.ok(userService.getMyTasks(request));
+//    }
 
     @GetMapping("/{userId}/tasks")
     public ResponseEntity<?> getUserTasks(@PathVariable Long userId) {
@@ -45,24 +44,27 @@ public class UserResource {
     }
 
     @PutMapping("/me/email")
-    public ResponseEntity<?> updateMyEmail(HttpServletRequest request, @RequestParam String email) {
-        return userService.updateMyEmail(request, email);
+    public ResponseEntity<?> updateMyEmail(@RequestParam Long id, @RequestParam String email) {
+        return userService.updateMyEmail(id, email);
     }
 
     @PutMapping("/me/password")
-    public ResponseEntity<?> updateMyPassword(HttpServletRequest request, @RequestParam String password) {
-        return userService.updateMyPassword(request, password);
+    public ResponseEntity<?> updateMyPassword(
+            @RequestParam Long id,
+            @RequestParam String email,
+            @RequestParam String password) {
+        return userService.updateMyPassword(id, email, password);
     }
 
-    @PutMapping("/me/username")
-    public ResponseEntity<?> updateMyUsername(HttpServletRequest request, @RequestParam String username) {
-        return userService.updateMyUsername(request, username);
-    }
+//    @PutMapping("/me/username")
+//    public ResponseEntity<?> updateMyUsername(HttpServletRequest request, @RequestParam String username) {
+//        return userService.updateMyUsername(request, username);
+//    }
 
-    @DeleteMapping("/me")
-    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
-        return userService.deleteUser(request);
-    }
+//    @DeleteMapping("/me")
+//    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
+//        return userService.deleteUser(request);
+//    }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteUserById(@PathVariable Long id) {

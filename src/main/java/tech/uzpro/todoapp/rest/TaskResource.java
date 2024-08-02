@@ -20,6 +20,7 @@ private final TaskService taskService;
 
     @PostMapping("/create")
     public ResponseEntity<?> createTask(@RequestBody @Valid CreatedTaskDTO createdTaskDTO) {
+        System.out.println("createdTaskDTO = " + createdTaskDTO);
         return taskService.createTask(createdTaskDTO);
     }
 

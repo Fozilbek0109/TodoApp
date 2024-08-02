@@ -44,9 +44,9 @@ public class AuthResource {
         return authService.resetPassword(email, token, password);
     }
 
-    @PostMapping("/refresh-token")
-    public ResponseEntity<?> refreshToken(@RequestParam(name = "rt") String refreshToken) {
-        return authService.refreshToken(refreshToken);
-    }
+//    @PostMapping("/refresh-token")
+//    public ResponseEntity<?> refreshToken(@RequestParam(name = "rt") String refreshToken) {
+////        return authService.refreshToken(refreshToken);
+//    }
 
 }

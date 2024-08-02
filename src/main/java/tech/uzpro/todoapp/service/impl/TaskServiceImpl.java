@@ -4,33 +4,48 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tech.uzpro.todoapp.domain.Task;
+import tech.uzpro.todoapp.domain.User;
 import tech.uzpro.todoapp.model.enums.Priority;
 import tech.uzpro.todoapp.model.payload.responce.ResponceTaskDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.model.payload.tasks.CreatedTaskDTO;
 import tech.uzpro.todoapp.repos.TaskRepository;
+import tech.uzpro.todoapp.repos.UserRepository;
 import tech.uzpro.todoapp.service.TaskService;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
 public class TaskServiceImpl implements TaskService {
 
     private final TaskRepository taskRepository;
+    private final UserRepository userRepository;
 
-    public TaskServiceImpl(final TaskRepository taskRepository) {
+    public TaskServiceImpl(final TaskRepository taskRepository, final UserRepository userRepository) {
         this.taskRepository = taskRepository;
+        this.userRepository = userRepository;
     }
 
     @Override
     public ResponseEntity<?> createTask(CreatedTaskDTO createdTaskDTO) {
+        Optional<User> optionalUser = userRepository.findById(createdTaskDTO.getUserId());
+        if (optionalUser.isEmpty()) {
+            ResponeseDTO responeseDto = ResponeseDTO.builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .message("User not found")
+                    .build();
+            return ResponseEntity.badRequest().body(responeseDto);
+        }
         Task task = Task.builder()
                 .title(createdTaskDTO.getTitle())
                 .description(createdTaskDTO.getDescription())
                 .priority(Priority.valueOf(createdTaskDTO.getPriority()))
                 .dueDate(createdTaskDTO.getDueDate())
                 .isCompleted(createdTaskDTO.isCompleted())
+                .user(optionalUser.get())
                 .build();
         ResponeseDTO responeseDto = ResponeseDTO.builder()
                 .status(HttpStatus.CREATED)
