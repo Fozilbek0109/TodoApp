@@ -39,9 +39,9 @@ public class AuthResource {
 
     @PutMapping("/reset-password")
     public ResponseEntity<?> resetPassword(@RequestParam(name = "e") String email,
-                                           @RequestParam(name = "t") int token,
+                                           @RequestParam(name = "c") int code,
                                            @RequestParam(name = "p") String password) {
-        return authService.resetPassword(email, token, password);
+        return authService.resetPassword(email, code, password);
     }
 
 //    @PostMapping("/refresh-token")
