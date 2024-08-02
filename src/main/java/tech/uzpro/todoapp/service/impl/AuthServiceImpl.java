@@ -262,12 +262,12 @@ public class AuthServiceImpl implements AuthService {
                         .build();
                 return ResponseEntity.ok(passwordResetSuccessfully);
             } else {
-                ResponeseDTO invalidToken = ResponeseDTO.builder()
+                ResponeseDTO invalidVerificationCode = ResponeseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST)
                         .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .message("Invalid token")
+                        .message("Invalid verification code")
                         .build();
-                return ResponseEntity.badRequest().body(invalidToken);
+                return ResponseEntity.badRequest().body(invalidVerificationCode);
             }
         }
         ResponeseDTO userNotFound = ResponeseDTO.builder()
