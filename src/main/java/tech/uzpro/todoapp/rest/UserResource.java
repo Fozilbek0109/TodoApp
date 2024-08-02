@@ -19,13 +19,13 @@ public class UserResource {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
-        return ResponseEntity.ok(userService.getAllUsers(page, size));
+        return userService.getAllUsers(page, size);
     }
 
     //    u -> username
     @GetMapping("/{id}")
     public ResponseEntity<?> getUserByUsername(@PathVariable Long id) {
-        return ResponseEntity.ok(userService.getUserById(id));
+        return userService.getUserById(id);
     }
 
 //    @GetMapping("/me")
@@ -40,7 +40,7 @@ public class UserResource {
 
     @GetMapping("/{userId}/tasks")
     public ResponseEntity<?> getUserTasks(@PathVariable Long userId) {
-        return ResponseEntity.ok(userService.getUserTasks(userId));
+        return userService.getUserTasks(userId);
     }
 
     @PutMapping("/me/email")
