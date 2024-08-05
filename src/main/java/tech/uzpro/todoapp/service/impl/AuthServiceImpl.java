@@ -23,6 +23,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+
 @Service
 public class AuthServiceImpl implements AuthService {
 
@@ -41,49 +42,45 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponseEntity<?> register(RegisterDTO dto) {
+    public ResponeseDTO register(RegisterDTO dto) {
 
         String passwordHash = passwordHash(dto.getPassword());
 
         if (!isUsernameValid(dto.getUsername())) {
-            ResponeseDTO usernameIsInvalid = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Username is invalid")
                     .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(usernameIsInvalid);
         }
         if (!isEmailValid(dto.getEmail())) {
-            ResponeseDTO emailIsInvalid = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Email is invalid")
                     .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emailIsInvalid);
+
         }
         if (!isPasswordValid(dto.getPassword())) {
-            ResponeseDTO passwordIsInvalid = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Password is invalid")
                     .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(passwordIsInvalid);
         }
         if (userRepository.existsByUsernameIgnoreCase(dto.getUsername())) {
-            ResponeseDTO usernameIsAlreadyTaken = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Username is already taken")
                     .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(usernameIsAlreadyTaken);
         }
         if (userRepository.existsByEmailIgnoreCase(dto.getEmail())) {
-            ResponeseDTO emailIsAlreadyTaken = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Email is already taken")
                     .build();
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(emailIsAlreadyTaken);
         }
         int verificationCode = new Random().nextInt(100000, 999999);
         User user = User.builder()
@@ -95,25 +92,23 @@ public class AuthServiceImpl implements AuthService {
                 .roles(Set.of(RoleName.ROLE_USER))
                 .build();
         userRepository.save(user);
-        ResponeseDTO responeseDto = ResponeseDTO.builder()
+        sendMailService.sendMail(dto.getEmail(), "UzPro.tech account verification code", "Your verification code is: " + verificationCode);
+        return ResponeseDTO.builder()
                 .status(HttpStatus.CREATED)
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Verification code sent")
                 .build();
-        sendMailService.sendMail(dto.getEmail(), "UzPro.tech account verification code", "Your verification code is: " + verificationCode);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responeseDto);
     }
 
     @Override
-    public ResponseEntity<?> verifyAccount(String email, Integer code) {
+    public ResponeseDTO verifyAccount(String email, Integer code) {
         Optional<User> optionalUser = userRepository.findByEmail(email);
         if (optionalUser.isEmpty()) {
-            ResponeseDTO userNotFound = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("User not found")
                     .build();
-            return ResponseEntity.badRequest().body(userNotFound);
         }
         User user = optionalUser.get();
         if (user.getVerificationCode().equals(code)) {
@@ -125,100 +120,107 @@ public class AuthServiceImpl implements AuthService {
                     "UzPro.tech account verified",
                     "<b>Your account has been verified successfully</b>\nThank you for using UzPro.tech\n\n<a href='https://uzpro.tech'>UzPro.tech</a>"
             );
-            ResponeseDTO accountVerified = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.OK)
                     .statusCode(HttpStatus.OK.value())
                     .message("Account verified")
                     .build();
-            return ResponseEntity.ok(accountVerified);
         }
-        ResponeseDTO invalidVerificationCode = ResponeseDTO.builder()
+        return ResponeseDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message("Invalid verification code")
                 .build();
-        return ResponseEntity.ok(invalidVerificationCode);
     }
 
     @Override
-    public ResponseEntity<?> login(LoginDTO dto) {
+    public ResponeseDTO login(LoginDTO dto) {
         if (!dto.getEmail().isEmpty() && isEmailValid(dto.getEmail())) {
             Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(dto.getEmail());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
 
                 if (passwordHashChecked(dto.getPassword(), user.getPassword())) {
-                    ResponeseDTO userLoggedInSuccessfully = ResponeseDTO.builder()
-                            .status(HttpStatus.OK)
-                            .statusCode(HttpStatus.OK.value())
-                            .message("User logged in successfully")
-                            .build();
-//                    TODO: generate token
+                    if (user.getVerificationCode() != null) {
 
-                    return ResponseEntity.ok(userLoggedInSuccessfully);
+                        return ResponeseDTO.builder()
+                                .status(HttpStatus.OK)
+                                .statusCode(HttpStatus.OK.value())
+                                .message("User logged in successfully")
+                                .build();
+//
+                    } else {
+
+                        return ResponeseDTO.builder()
+                                .status(HttpStatus.NON_AUTHORITATIVE_INFORMATION)
+                                .statusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value())
+                                .message("User not verification")
+                                .build();
+                    }
                 } else {
-                    ResponeseDTO invalidPassword = ResponeseDTO.builder()
+                    return ResponeseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
                             .statusCode(HttpStatus.BAD_REQUEST.value())
                             .message("Invalid password")
                             .build();
-                    return ResponseEntity.badRequest().body(invalidPassword);
                 }
             } else {
-                ResponeseDTO userNotFound = ResponeseDTO.builder()
+                return ResponeseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST)
                         .statusCode(HttpStatus.BAD_REQUEST.value())
                         .message("Email not found")
                         .build();
-                return ResponseEntity.badRequest().body(userNotFound);
             }
         }
         if (!dto.getUsername().isEmpty() && isUsernameValid(dto.getUsername())) {
             Optional<User> optionalUser = userRepository.findByUsernameIgnoreCase(dto.getUsername());
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
-                if (user.getPassword().equals(dto.getPassword())) {
-                    ResponeseDTO userLoggedInSuccessfully = ResponeseDTO.builder()
-                            .status(HttpStatus.OK)
-                            .statusCode(HttpStatus.OK.value())
-                            .message("User logged in successfully")
-                            .build();
-                    return ResponseEntity.ok(userLoggedInSuccessfully);
+                if (passwordHashChecked(dto.getPassword(), user.getPassword())) {
+                    if (user.getVerificationCode() != null) {
+                        return ResponeseDTO.builder()
+                                .status(HttpStatus.OK)
+                                .statusCode(HttpStatus.OK.value())
+                                .message("User logged in successfully")
+                                .build();
+                    } else {
+                        return ResponeseDTO.builder()
+                                .status(HttpStatus.NON_AUTHORITATIVE_INFORMATION)
+                                .statusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value())
+                                .message("User not verification")
+                                .build();
+                    }
                 } else {
-                    ResponeseDTO invalidPassword = ResponeseDTO.builder()
+                    return ResponeseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
                             .statusCode(HttpStatus.BAD_REQUEST.value())
                             .message("Invalid password")
                             .build();
-                    return ResponseEntity.badRequest().body(invalidPassword);
                 }
             } else {
-                ResponeseDTO userNotFound = ResponeseDTO.builder()
+              return ResponeseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST)
                         .statusCode(HttpStatus.BAD_REQUEST.value())
                         .message("User Name not found")
                         .build();
-                return ResponseEntity.badRequest().body(userNotFound);
             }
         }
         if (dto.getUsername().isEmpty() && dto.getEmail().isEmpty()) {
-            ResponeseDTO emptyCredentials = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Email or Username is empty")
                     .build();
-            return ResponseEntity.badRequest().body(emptyCredentials);
         }
-        ResponeseDTO invalidCredentials = ResponeseDTO.builder()
+        return  ResponeseDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message("Invalid credentials")
                 .build();
-        return ResponseEntity.badRequest().body(invalidCredentials);
     }
 
     @Override
-    public ResponseEntity<?> forgotPassword(String email) {
+    public ResponeseDTO forgotPassword(String email) {
         AtomicBoolean isSend = new AtomicBoolean(false);
         userRepository.findByEmailIgnoreCase(email).ifPresent(user -> {
             // send email with new password
@@ -242,40 +244,36 @@ public class AuthServiceImpl implements AuthService {
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message("User not found")
                 .build();
-        return isSend.get() ? ResponseEntity.ok(emailSent) : ResponseEntity.badRequest().body(userNotFound);
+        return isSend.get() ? emailSent : userNotFound;
     }
 
 
-
     @Override
-    public ResponseEntity<?> resetPassword(String email, int code, String password) {
+    public ResponeseDTO resetPassword(String email, int code, String password) {
         Optional<User> optionalUser = userRepository.findByEmailIgnoreCase(email);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             if (user.getVerificationCode() == code) {
                 user.setPassword(password);
                 userRepository.save(user);
-                ResponeseDTO passwordResetSuccessfully = ResponeseDTO.builder()
+                return ResponeseDTO.builder()
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
                         .message("Password reset successfully")
                         .build();
-                return ResponseEntity.ok(passwordResetSuccessfully);
             } else {
-                ResponeseDTO invalidVerificationCode = ResponeseDTO.builder()
+                return ResponeseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST)
                         .statusCode(HttpStatus.BAD_REQUEST.value())
                         .message("Invalid verification code")
                         .build();
-                return ResponseEntity.badRequest().body(invalidVerificationCode);
             }
         }
-        ResponeseDTO userNotFound = ResponeseDTO.builder()
+        return ResponeseDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
                 .message("User not found")
                 .build();
-        return ResponseEntity.badRequest().body(userNotFound);
     }
 
     private static boolean isEmailValid(String email) {

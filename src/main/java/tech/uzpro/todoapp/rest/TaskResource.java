@@ -3,6 +3,9 @@ package tech.uzpro.todoapp.rest;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.uzpro.todoapp.model.payload.responce.ResponceTaskDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.model.payload.tasks.CreatedTaskDTO;
 import tech.uzpro.todoapp.service.TaskService;
 
@@ -19,13 +22,13 @@ private final TaskService taskService;
     }
 
     @PostMapping("/create")
-    public ResponseEntity<?> createTask(@RequestBody @Valid CreatedTaskDTO createdTaskDTO) {
+    public ResponeseDTO createTask(@RequestBody @Valid CreatedTaskDTO createdTaskDTO) {
         System.out.println("createdTaskDTO = " + createdTaskDTO);
         return taskService.createTask(createdTaskDTO);
     }
 
     @PostMapping("/update/{id}")
-    public ResponseEntity<?> updateTask(
+    public ResponeseDTO updateTask(
             @PathVariable("id") UUID id,
             @RequestBody @Valid CreatedTaskDTO createdTaskDTO
     ) {
@@ -33,32 +36,32 @@ private final TaskService taskService;
     }
 
     @PostMapping("/delete/{id}")
-    public ResponseEntity<?> deleteTask(@PathVariable("id") UUID id) {
+    public ResponeseDTO deleteTask(@PathVariable("id") UUID id) {
         return taskService.deleteTask(id);
     }
 
     @GetMapping("/all")
-    public ResponseEntity<?> getAllTasks() {
+    public ResponceTasksDTO getAllTasks() {
         return taskService.getAllTasks();
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<?> getTaskById(@PathVariable("id") UUID id) {
+    public ResponceTaskDTO getTaskById(@PathVariable("id") UUID id) {
         return taskService.getTaskById(id);
     }
 
     @GetMapping("/priority/{priority}")
-    public ResponseEntity<?> getTasksByPriority(@PathVariable String priority) {
+    public ResponceTasksDTO getTasksByPriority(@PathVariable String priority) {
         return taskService.getTasksByPriority(priority);
     }
 
     @GetMapping("/due-date/{dueDate}")
-    public ResponseEntity<?> getTasksByDueDate(@PathVariable Long dueDate) {
+    public ResponceTasksDTO getTasksByDueDate(@PathVariable Long dueDate) {
         return taskService.getTasksByDueDate(dueDate);
     }
 
     @GetMapping("/status/{completed}")
-    public ResponseEntity<?> getTasksByStatus(@PathVariable boolean completed) {
+    public ResponceTasksDTO getTasksByStatus(@PathVariable boolean completed) {
         return taskService.getTasksByStatus(completed);
     }
 

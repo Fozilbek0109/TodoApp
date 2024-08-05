@@ -2,6 +2,9 @@ package tech.uzpro.todoapp.rest;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponceUserDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.service.UserService;
 
 @RestController
@@ -15,16 +18,13 @@ public class UserResource {
     }
 
     @GetMapping
-    public ResponseEntity<?> getAllUsers(
-            @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
-    ) {
+    public ResponseEntity<?> getAllUsers(@RequestParam(defaultValue = "0") int page, @RequestParam(defaultValue = "10") int size) {
         return userService.getAllUsers(page, size);
     }
 
     //    u -> username
     @GetMapping("/{id}")
-    public ResponseEntity<?> getUserByUsername(@PathVariable Long id) {
+    public ResponceUserDTO getUserByUsername(@PathVariable Long id) {
         return userService.getUserById(id);
     }
 
@@ -39,20 +39,17 @@ public class UserResource {
 //    }
 
     @GetMapping("/{userId}/tasks")
-    public ResponseEntity<?> getUserTasks(@PathVariable Long userId) {
+    public ResponceTasksDTO getUserTasks(@PathVariable Long userId) {
         return userService.getUserTasks(userId);
     }
 
     @PutMapping("/me/email")
-    public ResponseEntity<?> updateMyEmail(@RequestParam Long id, @RequestParam String email) {
+    public ResponceUserDTO updateMyEmail(@RequestParam Long id, @RequestParam String email) {
         return userService.updateMyEmail(id, email);
     }
 
     @PutMapping("/me/password")
-    public ResponseEntity<?> updateMyPassword(
-            @RequestParam Long id,
-            @RequestParam String email,
-            @RequestParam String password) {
+    public ResponeseDTO updateMyPassword(@RequestParam Long id, @RequestParam String email, @RequestParam String password) {
         return userService.updateMyPassword(id, email, password);
     }
 
@@ -67,7 +64,7 @@ public class UserResource {
 //    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<?> deleteUserById(@PathVariable Long id) {
+    public ResponeseDTO deleteUserById(@PathVariable Long id) {
         return userService.deleteUserById(id);
     }
 }

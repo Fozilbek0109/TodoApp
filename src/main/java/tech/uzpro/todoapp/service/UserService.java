@@ -2,26 +2,29 @@ package tech.uzpro.todoapp.service;
 
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.ResponseEntity;
+import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponceUserDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 
 public interface UserService {
 
 //    ResponseEntity<?> getMe(HttpServletRequest request);
 
-    ResponseEntity<?> getUserById(Long id);
+    ResponceUserDTO getUserById(Long id);
 
     ResponseEntity<?> getAllUsers(int page, int limit);
 
-    ResponseEntity<?> updateMyEmail(Long id, String email);
+    ResponceUserDTO updateMyEmail(Long id, String email);
 
-    ResponseEntity<?> updateMyPassword(long id, String email, String password);
+    ResponeseDTO updateMyPassword(long id, String email, String password);
 
 //    ResponseEntity<?> updateMyUsername(HttpServletRequest request, String username);
 
 //    ResponseEntity<?> deleteUser(HttpServletRequest request);
 
-    ResponseEntity<?> deleteUserById(Long id);
+    ResponeseDTO deleteUserById(Long id);
 
 //    ResponseEntity<?> getMyTasks(HttpServletRequest request);
 
-    ResponseEntity<?> getUserTasks(Long userId);
+    ResponceTasksDTO getUserTasks(Long userId);
 }

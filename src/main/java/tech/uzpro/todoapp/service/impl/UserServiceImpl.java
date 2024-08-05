@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import tech.uzpro.todoapp.domain.User;
 import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponceUserDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.repos.TaskRepository;
 import tech.uzpro.todoapp.repos.UserRepository;
 import tech.uzpro.todoapp.service.UserService;
@@ -47,14 +48,12 @@ public class UserServiceImpl implements UserService {
 */
 
     @Override
-    public ResponseEntity<?> getUserById(Long id) {
+    public ResponceUserDTO getUserById(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
-            ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(optionalUser.get()).build();
-            return ResponseEntity.ok(responceUserDTO);
+            return ResponceUserDTO.builder().message("User found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(optionalUser.get()).build();
         }
-        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
-        return ResponseEntity.badRequest().body(responceUserDTO);
+        return ResponceUserDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
     }
 
     @Override
@@ -64,20 +63,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<?> updateMyEmail(Long id, String email) {
+    public ResponceUserDTO updateMyEmail(Long id, String email) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             User user = optionalUser.get();
             user.setEmail(email);
-            ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Email updated").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(userRepository.save(user)).build();
-            return ResponseEntity.ok(responceUserDTO);
+            return ResponceUserDTO.builder().message("Email updated").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(userRepository.save(user)).build();
         }
-        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responceUserDTO);
+        return ResponceUserDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
     }
 
     @Override
-    public ResponseEntity<?> updateMyPassword(long id, String userName, String password) {
+    public ResponeseDTO updateMyPassword(long id, String userName, String password) {
         byte[] decode = Base64.getDecoder().decode(password.getBytes(StandardCharsets.UTF_8));
         String decodedPassword = new String(decode, StandardCharsets.UTF_8);
         Optional<User> optionalUser = userRepository.findById(id);
@@ -85,14 +82,11 @@ public class UserServiceImpl implements UserService {
             User user = optionalUser.get();
             if (user.getUsername().equals(userName)) {
                 user.setPassword(decodedPassword);
-                ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Password updated").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(userRepository.save(user)).build();
-                return ResponseEntity.ok(responceUserDTO);
+                return ResponeseDTO.builder().message("Password updated").status(HttpStatus.OK).statusCode(HttpStatus.OK.value()).build();
             }
-            ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
-            return ResponseEntity.badRequest().body(responceTasksDTO);
+            return ResponeseDTO.builder().message("Username not found").status(HttpStatus.BAD_REQUEST).statusCode(HttpStatus.BAD_REQUEST.value()).build();
         }
-        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statucCode(HttpStatus.UNAUTHORIZED.value()).build();
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(responceUserDTO);
+        return ResponeseDTO.builder().message("Unauthorized").status(HttpStatus.UNAUTHORIZED).statusCode(HttpStatus.UNAUTHORIZED.value()).build();
     }
 
 /*
@@ -129,15 +123,13 @@ public class UserServiceImpl implements UserService {
 */
 
     @Override
-    public ResponseEntity<?> deleteUserById(Long id) {
+    public ResponeseDTO deleteUserById(Long id) {
         Optional<User> optionalUser = userRepository.findById(id);
         if (optionalUser.isPresent()) {
             userRepository.delete(optionalUser.get());
-            ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User deleted").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).build();
-            return ResponseEntity.ok(responceUserDTO);
+            return ResponeseDTO.builder().message("User deleted").status(HttpStatus.OK).statusCode(HttpStatus.OK.value()).build();
         }
-        ResponceUserDTO responceUserDTO = ResponceUserDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
-        return ResponseEntity.badRequest().body(responceUserDTO);
+        return ResponeseDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statusCode(HttpStatus.BAD_REQUEST.value()).build();
     }
 /*
     @Override
@@ -157,13 +149,11 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public ResponseEntity<?> getUserTasks(Long userId) {
+    public ResponceTasksDTO getUserTasks(Long userId) {
         if (!userRepository.existsById(userId)) {
-            ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
-            return ResponseEntity.badRequest().body(responceTasksDTO);
+            return ResponceTasksDTO.builder().message("User not found").status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
         }
-        ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder().message("Tasks found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).tasks(taskRepository.findAllByUserId(userId)).build();
-        return ResponseEntity.ok(responceTasksDTO);
+        return ResponceTasksDTO.builder().message("Tasks found").status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).tasks(taskRepository.findAllByUserId(userId)).build();
     }
 
     /*

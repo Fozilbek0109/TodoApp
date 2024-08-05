@@ -3,14 +3,15 @@ package tech.uzpro.todoapp.service;
 import org.springframework.http.ResponseEntity;
 import tech.uzpro.todoapp.model.payload.auth.LoginDTO;
 import tech.uzpro.todoapp.model.payload.auth.RegisterDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 
 public interface AuthService {
 
-    ResponseEntity<?> register(RegisterDTO dto);
+    ResponeseDTO register(RegisterDTO dto);
 
-    ResponseEntity<?> verifyAccount(String email, Integer code);
+    ResponeseDTO verifyAccount(String email, Integer code);
 
-    ResponseEntity<?> login(LoginDTO dto);
+    ResponeseDTO login(LoginDTO dto);
 
 //    default ResponseEntity<?> refreshToken(String refreshToken) {
 //        return null;
@@ -24,7 +25,7 @@ public interface AuthService {
 //        return null;
 //    }
 
-    ResponseEntity<?> forgotPassword(String email);
+    ResponeseDTO forgotPassword(String email);
 
-    ResponseEntity<?> resetPassword(String email,int code, String password);
+    ResponeseDTO resetPassword(String email,int code, String password);
 }

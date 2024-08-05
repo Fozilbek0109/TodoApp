@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.uzpro.todoapp.model.payload.auth.LoginDTO;
 import tech.uzpro.todoapp.model.payload.auth.RegisterDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.service.AuthService;
 
 @RestController
@@ -17,28 +18,28 @@ public class AuthResource {
     }
 
     @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody @Valid RegisterDTO dto) {
+    public ResponeseDTO register(@RequestBody @Valid RegisterDTO dto) {
         return authService.register(dto);
     }
 
     @PostMapping("/verify-account")
-    public ResponseEntity<?> verifyAccount(@RequestParam(name = "e") String email,
+    public ResponeseDTO verifyAccount(@RequestParam(name = "e") String email,
                                            @RequestParam(name = "c") Integer code) {
         return authService.verifyAccount(email, code);
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody @Valid LoginDTO dto) {
+    public ResponeseDTO login(@RequestBody @Valid LoginDTO dto) {
         return authService.login(dto);
     }
 
     @PostMapping("/forgot-password")
-    public ResponseEntity<?> forgotPassword(@RequestParam(name = "e") String email) {
+    public ResponeseDTO forgotPassword(@RequestParam(name = "e") String email) {
         return authService.forgotPassword(email);
     }
 
     @PutMapping("/reset-password")
-    public ResponseEntity<?> resetPassword(@RequestParam(name = "e") String email,
+    public ResponeseDTO resetPassword(@RequestParam(name = "e") String email,
                                            @RequestParam(name = "c") int code,
                                            @RequestParam(name = "p") String password) {
         return authService.resetPassword(email, code, password);

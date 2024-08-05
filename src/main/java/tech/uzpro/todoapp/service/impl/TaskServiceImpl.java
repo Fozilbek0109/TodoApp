@@ -29,15 +29,14 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ResponseEntity<?> createTask(CreatedTaskDTO createdTaskDTO) {
+    public ResponeseDTO createTask(CreatedTaskDTO createdTaskDTO) {
         Optional<User> optionalUser = userRepository.findById(createdTaskDTO.getUserId());
         if (optionalUser.isEmpty()) {
-            ResponeseDTO responeseDto = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("User not found")
                     .build();
-            return ResponseEntity.badRequest().body(responeseDto);
         }
         Task task = Task.builder()
                 .title(createdTaskDTO.getTitle())
@@ -47,24 +46,22 @@ public class TaskServiceImpl implements TaskService {
                 .isCompleted(createdTaskDTO.isCompleted())
                 .user(optionalUser.get())
                 .build();
-        ResponeseDTO responeseDto = ResponeseDTO.builder()
+        taskRepository.save(task);
+        return ResponeseDTO.builder()
                 .status(HttpStatus.CREATED)
                 .statusCode(HttpStatus.CREATED.value())
                 .message("Task created")
                 .build();
-        taskRepository.save(task);
-        return ResponseEntity.status(HttpStatus.CREATED).body(responeseDto);
     }
 
     @Override
-    public ResponseEntity<?> updateTask(UUID id, CreatedTaskDTO createdTaskDTO) {
+    public ResponeseDTO updateTask(UUID id, CreatedTaskDTO createdTaskDTO) {
         if (!taskRepository.existsById(id)) {
-            ResponeseDTO responeseDto = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Task not found")
                     .build();
-            return ResponseEntity.badRequest().body(responeseDto);
         }
         Task task = Task.builder()
                 .id(id)
@@ -74,131 +71,118 @@ public class TaskServiceImpl implements TaskService {
                 .dueDate(createdTaskDTO.getDueDate())
                 .isCompleted(createdTaskDTO.isCompleted())
                 .build();
-        ResponeseDTO responeseDto = ResponeseDTO.builder()
+        taskRepository.save(task);
+        return ResponeseDTO.builder()
                 .status(HttpStatus.UPGRADE_REQUIRED)
                 .statusCode(HttpStatus.UPGRADE_REQUIRED.value())
                 .message("Task updated")
                 .build();
-        taskRepository.save(task);
-        return ResponseEntity.status(HttpStatus.UPGRADE_REQUIRED).body(responeseDto);
     }
 
     @Override
-    public ResponseEntity<?> deleteTask(UUID id) {
+    public ResponeseDTO deleteTask(UUID id) {
         if (!taskRepository.existsById(id)) {
-            ResponeseDTO responeseDto = ResponeseDTO.builder()
+            return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
                     .message("Task not found")
                     .build();
-            return ResponseEntity.badRequest().body(responeseDto);
         }
         taskRepository.deleteById(id);
-        ResponeseDTO responeseDto = ResponeseDTO.builder()
+        return ResponeseDTO.builder()
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
                 .message("Task deleted")
                 .build();
-        return ResponseEntity.ok(responeseDto);
     }
 
     @Override
-    public ResponseEntity<?> getAllTasks() {
+    public ResponceTasksDTO getAllTasks() {
         if (taskRepository.findAll().isEmpty()) {
-            ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+            return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message("No tasks found")
                     .tasks(null)
                     .build();
-            return ResponseEntity.badRequest().body(responceTasksDTO);
         }
-        ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+        return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
                 .message("Tasks found")
                 .tasks(taskRepository.findAll())
                 .build();
-        return ResponseEntity.ok(responceTasksDTO);
     }
 
     @Override
-    public ResponseEntity<?> getTaskById(UUID id) {
-        if (taskRepository.existsById(id)) {
-            ResponceTaskDTO responceTaskDTO = ResponceTaskDTO.builder()
+    public ResponceTaskDTO getTaskById(UUID id) {
+        if (!taskRepository.existsById(id)) {
+            return ResponceTaskDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message("Task not found")
                     .task(java.util.Optional.empty())
                     .build();
-            return ResponseEntity.badRequest().body(responceTaskDTO);
         }
-        ResponceTaskDTO responceTaskDTO = ResponceTaskDTO.builder()
+        return ResponceTaskDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
                 .message("Task found")
                 .task(taskRepository.findById(id))
                 .build();
-        return ResponseEntity.ok(responceTaskDTO);
     }
 
     @Override
-    public ResponseEntity<?> getTasksByPriority(String priority) {
+    public ResponceTasksDTO getTasksByPriority(String priority) {
         if (taskRepository.findAllByPriority(Priority.valueOf(priority)).isEmpty()) {
-            ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+            return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message("No tasks found")
                     .tasks(null)
                     .build();
-            return ResponseEntity.badRequest().body(responceTasksDTO);
         }
-        ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+        return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
                 .message("Tasks found")
                 .tasks(taskRepository.findAllByPriority(Priority.valueOf(priority)))
                 .build();
-        return ResponseEntity.ok(responceTasksDTO);
     }
 
     @Override
-    public ResponseEntity<?> getTasksByDueDate(Long dueDate) {
+    public ResponceTasksDTO getTasksByDueDate(Long dueDate) {
         if (taskRepository.findAllByDueDate(dueDate).isEmpty()) {
-            ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+            return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message("No tasks found")
                     .tasks(null)
                     .build();
-            return ResponseEntity.badRequest().body(responceTasksDTO);
         }
-        ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+        return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
                 .message("Tasks found")
                 .tasks(taskRepository.findAllByDueDate(dueDate))
                 .build();
-        return ResponseEntity.ok(responceTasksDTO);
     }
 
     @Override
-    public ResponseEntity<?> getTasksByStatus(boolean completed) {
+    public ResponceTasksDTO getTasksByStatus(boolean completed) {
         if (taskRepository.findAllByIsCompleted(completed).isEmpty()) {
-            ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+            return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message("No tasks found")
                     .tasks(null)
                     .build();
-            return ResponseEntity.badRequest().body(responceTasksDTO);
         }
-        ResponceTasksDTO responceTasksDTO = ResponceTasksDTO.builder()
+        return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
                 .message("Tasks found")
                 .tasks(taskRepository.findAllByIsCompleted(completed))
                 .build();
-        return ResponseEntity.ok(responceTasksDTO);
     }
 }
