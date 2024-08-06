@@ -1,14 +1,10 @@
 package tech.uzpro.todoapp.service.impl;
 
 import com.password4j.Hash;
-import com.password4j.HashChecker;
 import com.password4j.Password;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-//import tech.uzpro.todoapp.config.JwtConfig;
-import org.springframework.web.bind.annotation.PostMapping;
 import tech.uzpro.todoapp.config.SendMailService;
 import tech.uzpro.todoapp.domain.User;
 import tech.uzpro.todoapp.model.enums.RoleName;
@@ -23,13 +19,14 @@ import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static tech.uzpro.todoapp.model.payload.ResponseEnum.*;
+
 
 @Service
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
     private final SendMailService sendMailService;
-//    private final JwtConfig jwtConfig;
 
     @Value("${pass.hash.key}")
     private static String passKey;
@@ -38,7 +35,6 @@ public class AuthServiceImpl implements AuthService {
     public AuthServiceImpl(final UserRepository userRepository, SendMailService sendMailService/*, JwtConfig jwtConfig*/) {
         this.userRepository = userRepository;
         this.sendMailService = sendMailService;
-//        this.jwtConfig = jwtConfig;
     }
 
     @Override
@@ -50,14 +46,14 @@ public class AuthServiceImpl implements AuthService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Username is invalid")
+                    .message(USER_NAME_IS_INVALID)
                     .build();
         }
         if (!isEmailValid(dto.getEmail())) {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Email is invalid")
+                    .message(EMAIL_IS_INVALID)
                     .build();
 
         }
@@ -72,7 +68,7 @@ public class AuthServiceImpl implements AuthService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Username is already taken")
+                    .message(USER_NAME_ALREADY_TAKEN)
                     .build();
         }
         if (userRepository.existsByEmailIgnoreCase(dto.getEmail())) {
@@ -96,7 +92,7 @@ public class AuthServiceImpl implements AuthService {
         return ResponeseDTO.builder()
                 .status(HttpStatus.CREATED)
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Verification code sent")
+                .message(VERIFICATION_CODE_SENT)
                 .build();
     }
 
@@ -107,7 +103,7 @@ public class AuthServiceImpl implements AuthService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("User not found")
+                    .message(USER_NOT_FOUND)
                     .build();
         }
         User user = optionalUser.get();
@@ -123,13 +119,13 @@ public class AuthServiceImpl implements AuthService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.OK)
                     .statusCode(HttpStatus.OK.value())
-                    .message("Account verified")
+                    .message(ACCOUNT_VERIFIED)
                     .build();
         }
         return ResponeseDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("Invalid verification code")
+                .message(INVALID_VERIFICATION_CODE)
                 .build();
     }
 
@@ -141,12 +137,12 @@ public class AuthServiceImpl implements AuthService {
                 User user = optionalUser.get();
 
                 if (passwordHashChecked(dto.getPassword(), user.getPassword())) {
-                    if (user.getVerificationCode() != null) {
+                    if (user.getVerificationCode() == null) {
 
                         return ResponeseDTO.builder()
                                 .status(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())
-                                .message("User logged in successfully")
+                                .message(USER_LOGGED_IN_SUCCESSFULLY)
                                 .build();
 //
                     } else {
@@ -154,21 +150,21 @@ public class AuthServiceImpl implements AuthService {
                         return ResponeseDTO.builder()
                                 .status(HttpStatus.NON_AUTHORITATIVE_INFORMATION)
                                 .statusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value())
-                                .message("User not verification")
+                                .message(USER_NOT_VERIFICATION)
                                 .build();
                     }
                 } else {
                     return ResponeseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
                             .statusCode(HttpStatus.BAD_REQUEST.value())
-                            .message("Invalid password")
+                            .message(INVALID_PASSWORD)
                             .build();
                 }
             } else {
                 return ResponeseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST)
                         .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .message("Email not found")
+                        .message(EMAIL_NOT_FOUND)
                         .build();
             }
         }
@@ -177,31 +173,31 @@ public class AuthServiceImpl implements AuthService {
             if (optionalUser.isPresent()) {
                 User user = optionalUser.get();
                 if (passwordHashChecked(dto.getPassword(), user.getPassword())) {
-                    if (user.getVerificationCode() != null) {
+                    if (user.getVerificationCode() == null) {
                         return ResponeseDTO.builder()
                                 .status(HttpStatus.OK)
                                 .statusCode(HttpStatus.OK.value())
-                                .message("User logged in successfully")
+                                .message(USER_LOGGED_IN_SUCCESSFULLY)
                                 .build();
                     } else {
                         return ResponeseDTO.builder()
                                 .status(HttpStatus.NON_AUTHORITATIVE_INFORMATION)
                                 .statusCode(HttpStatus.NON_AUTHORITATIVE_INFORMATION.value())
-                                .message("User not verification")
+                                .message(USER_NOT_VERIFICATION)
                                 .build();
                     }
                 } else {
                     return ResponeseDTO.builder()
                             .status(HttpStatus.BAD_REQUEST)
                             .statusCode(HttpStatus.BAD_REQUEST.value())
-                            .message("Invalid password")
+                            .message(INVALID_PASSWORD)
                             .build();
                 }
             } else {
               return ResponeseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST)
                         .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .message("User Name not found")
+                        .message(USER_NAME_NOT_FOUND)
                         .build();
             }
         }
@@ -209,13 +205,13 @@ public class AuthServiceImpl implements AuthService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Email or Username is empty")
+                    .message(EMAIL_OR_USER_NAME_IS_EMPTY)
                     .build();
         }
         return  ResponeseDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("Invalid credentials")
+                .message(INVALID_CREDENTIALS)
                 .build();
     }
 
@@ -237,12 +233,12 @@ public class AuthServiceImpl implements AuthService {
         ResponeseDTO emailSent = ResponeseDTO.builder()
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
-                .message("Email sent")
+                .message(EMAIL_SENT)
                 .build();
         ResponeseDTO userNotFound = ResponeseDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("User not found")
+                .message(USER_NOT_FOUND)
                 .build();
         return isSend.get() ? emailSent : userNotFound;
     }
@@ -259,20 +255,20 @@ public class AuthServiceImpl implements AuthService {
                 return ResponeseDTO.builder()
                         .status(HttpStatus.OK)
                         .statusCode(HttpStatus.OK.value())
-                        .message("Password reset successfully")
+                        .message(PASSWORD_RESET_SUCCESSFULLY)
                         .build();
             } else {
                 return ResponeseDTO.builder()
                         .status(HttpStatus.BAD_REQUEST)
                         .statusCode(HttpStatus.BAD_REQUEST.value())
-                        .message("Invalid verification code")
+                        .message(INVALID_VERIFICATION_CODE)
                         .build();
             }
         }
         return ResponeseDTO.builder()
                 .status(HttpStatus.BAD_REQUEST)
                 .statusCode(HttpStatus.BAD_REQUEST.value())
-                .message("User not found")
+                .message(USER_NOT_FOUND)
                 .build();
     }
 

@@ -1,7 +1,6 @@
 package tech.uzpro.todoapp.service.impl;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import tech.uzpro.todoapp.domain.Task;
 import tech.uzpro.todoapp.domain.User;
@@ -16,6 +15,8 @@ import tech.uzpro.todoapp.service.TaskService;
 
 import java.util.Optional;
 import java.util.UUID;
+
+import static tech.uzpro.todoapp.model.payload.ResponseEnum.*;
 
 @Service
 public class TaskServiceImpl implements TaskService {
@@ -35,7 +36,7 @@ public class TaskServiceImpl implements TaskService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("User not found")
+                    .message(USER_NOT_FOUND)
                     .build();
         }
         Task task = Task.builder()
@@ -50,7 +51,7 @@ public class TaskServiceImpl implements TaskService {
         return ResponeseDTO.builder()
                 .status(HttpStatus.CREATED)
                 .statusCode(HttpStatus.CREATED.value())
-                .message("Task created")
+                .message(TASK_CREATED)
                 .build();
     }
 
@@ -60,7 +61,7 @@ public class TaskServiceImpl implements TaskService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Task not found")
+                    .message(TASK_NOT_FOUND)
                     .build();
         }
         Task task = Task.builder()
@@ -75,7 +76,7 @@ public class TaskServiceImpl implements TaskService {
         return ResponeseDTO.builder()
                 .status(HttpStatus.UPGRADE_REQUIRED)
                 .statusCode(HttpStatus.UPGRADE_REQUIRED.value())
-                .message("Task updated")
+                .message(TASK_UPDATED)
                 .build();
     }
 
@@ -85,14 +86,14 @@ public class TaskServiceImpl implements TaskService {
             return ResponeseDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Task not found")
+                    .message(TASK_NOT_FOUND)
                     .build();
         }
         taskRepository.deleteById(id);
         return ResponeseDTO.builder()
                 .status(HttpStatus.OK)
                 .statusCode(HttpStatus.OK.value())
-                .message("Task deleted")
+                .message(TASK_DELETED)
                 .build();
     }
 
@@ -102,14 +103,14 @@ public class TaskServiceImpl implements TaskService {
             return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
-                    .message("No tasks found")
+                    .message(NO_TASK_FOUND)
                     .tasks(null)
                     .build();
         }
         return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
-                .message("Tasks found")
+                .message(TASK_FOUND)
                 .tasks(taskRepository.findAll())
                 .build();
     }
@@ -120,14 +121,14 @@ public class TaskServiceImpl implements TaskService {
             return ResponceTaskDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Task not found")
+                    .message(TASK_NOT_FOUND)
                     .task(java.util.Optional.empty())
                     .build();
         }
         return ResponceTaskDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
-                .message("Task found")
+                .message(TASK_FOUND)
                 .task(taskRepository.findById(id))
                 .build();
     }
@@ -138,14 +139,14 @@ public class TaskServiceImpl implements TaskService {
             return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
-                    .message("No tasks found")
+                    .message(NO_TASK_FOUND)
                     .tasks(null)
                     .build();
         }
         return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
-                .message("Tasks found")
+                .message(TASK_FOUND)
                 .tasks(taskRepository.findAllByPriority(Priority.valueOf(priority)))
                 .build();
     }
@@ -156,14 +157,14 @@ public class TaskServiceImpl implements TaskService {
             return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
-                    .message("No tasks found")
+                    .message(NO_TASK_FOUND)
                     .tasks(null)
                     .build();
         }
         return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
-                .message("Tasks found")
+                .message(TASK_FOUND)
                 .tasks(taskRepository.findAllByDueDate(dueDate))
                 .build();
     }
@@ -174,14 +175,14 @@ public class TaskServiceImpl implements TaskService {
             return ResponceTasksDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
                     .statucCode(HttpStatus.BAD_REQUEST.value())
-                    .message("No tasks found")
+                    .message(NO_TASK_FOUND)
                     .tasks(null)
                     .build();
         }
         return ResponceTasksDTO.builder()
                 .status(HttpStatus.OK)
                 .statucCode(HttpStatus.OK.value())
-                .message("Tasks found")
+                .message(TASK_FOUND)
                 .tasks(taskRepository.findAllByIsCompleted(completed))
                 .build();
     }
