@@ -27,4 +27,6 @@ public interface UserService {
 //    ResponseEntity<?> getMyTasks(HttpServletRequest request);
 
     ResponceTasksDTO getUserTasks(Long userId);
+
+    ResponceUserDTO getUserByEmail(String email);
 }

@@ -62,7 +62,10 @@ public class UserResource {
 //    public ResponseEntity<?> deleteUser(HttpServletRequest request) {
 //        return userService.deleteUser(request);
 //    }
-
+    @GetMapping("/email")
+    public ResponceUserDTO getUserByEmail(@PathVariable String email) {
+        return userService.getUserByEmail(email);
+    }
     @DeleteMapping("/{id}")
     public ResponeseDTO deleteUserById(@PathVariable Long id) {
         return userService.deleteUserById(id);

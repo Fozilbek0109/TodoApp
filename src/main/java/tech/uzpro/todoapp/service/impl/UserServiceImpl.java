@@ -110,5 +110,14 @@ public class UserServiceImpl implements UserService {
         return ResponceTasksDTO.builder().message(TASK_FOUND).status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).tasks(taskRepository.findAllByUserId(userId)).build();
     }
 
+    @Override
+    public ResponceUserDTO getUserByEmail(String email) {
+        Optional<User> optionalUser = userRepository.findByEmail(email);
+        if (optionalUser.isPresent()) {
+            return ResponceUserDTO.builder().message(USER_FOUND).status(HttpStatus.OK).statucCode(HttpStatus.OK.value()).user(optionalUser.get()).build();
+        }
+        return ResponceUserDTO.builder().message(USER_NOT_FOUND).status(HttpStatus.BAD_REQUEST).statucCode(HttpStatus.BAD_REQUEST.value()).build();
+    }
+
 
 }
