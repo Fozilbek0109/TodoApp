@@ -15,14 +15,14 @@ import java.util.UUID;
 @RequestMapping("/api/tasks")
 public class TaskResource {
 
-private final TaskService taskService;
+    private final TaskService taskService;
 
     public TaskResource(final TaskService taskService) {
         this.taskService = taskService;
     }
 
     @PostMapping("/create")
-    public GetTaskDTO createTask(@RequestBody @Valid CreatedTaskDTO createdTaskDTO) {
+    public ResponceTaskDTO createTask(@RequestBody @Valid CreatedTaskDTO createdTaskDTO) {
         System.out.println("createdTaskDTO = " + createdTaskDTO);
         return taskService.createTask(createdTaskDTO);
     }
@@ -32,7 +32,7 @@ private final TaskService taskService;
             @PathVariable("id") UUID id,
             @RequestBody @Valid CreatedTaskDTO createdTaskDTO
     ) {
-        return taskService.updateTask(id,createdTaskDTO);
+        return taskService.updateTask(id, createdTaskDTO);
     }
 
     @PostMapping("/delete/{id}")

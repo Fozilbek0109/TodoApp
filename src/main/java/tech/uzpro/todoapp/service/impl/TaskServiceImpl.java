@@ -31,16 +31,15 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public GetTaskDTO createTask(CreatedTaskDTO createdTaskDTO) {
+    public ResponceTaskDTO createTask(CreatedTaskDTO createdTaskDTO) {
         Optional<User> optionalUser = userRepository.findById(createdTaskDTO.getUserId());
         if (optionalUser.isEmpty()) {
-            return GetTaskDTO.builder()
-                    .id(null)
-                    .title(null)
-                    .description(null)
-                    .priority(null)
-                    .dueDate(null)
-                    .completed(false).build();
+            return ResponceTaskDTO.builder()
+                    .status(HttpStatus.BAD_REQUEST)
+                    .statucCode(HttpStatus.BAD_REQUEST.value())
+                    .message(USER_NOT_FOUND)
+                    .task(java.util.Optional.empty())
+                    .build();
         }
         Task task = Task.builder()
                 .title(createdTaskDTO.getTitle())
@@ -51,13 +50,12 @@ public class TaskServiceImpl implements TaskService {
                 .user(optionalUser.get())
                 .build();
         taskRepository.save(task);
-        return GetTaskDTO.builder()
-                .id(task.getId())
-                .title(task.getTitle())
-                .description(task.getDescription())
-                .priority(task.getPriority().name())
-                .dueDate(task.getDueDate())
-                .completed(task.isCompleted()).build();
+        return ResponceTaskDTO.builder()
+                .status(HttpStatus.CREATED)
+                .statucCode(HttpStatus.CREATED.value())
+                .message(TASK_CREATED)
+                .task(Optional.of(task))
+                .build();
     }
 
     @Override

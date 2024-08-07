@@ -10,7 +10,7 @@ import tech.uzpro.todoapp.model.payload.tasks.GetTaskDTO;
 import java.util.UUID;
 
 public interface TaskService {
-    GetTaskDTO createTask(CreatedTaskDTO createdTaskDTO);
+    ResponceTaskDTO createTask(CreatedTaskDTO createdTaskDTO);
 
     ResponeseDTO updateTask(UUID id, CreatedTaskDTO createdTaskDTO);
 
