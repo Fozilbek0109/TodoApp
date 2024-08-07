@@ -28,7 +28,7 @@ public class TaskResource {
     }
 
     @PostMapping("/update/{id}")
-    public ResponeseDTO updateTask(
+    public ResponceTaskDTO updateTask(
             @PathVariable("id") UUID id,
             @RequestBody @Valid CreatedTaskDTO createdTaskDTO
     ) {

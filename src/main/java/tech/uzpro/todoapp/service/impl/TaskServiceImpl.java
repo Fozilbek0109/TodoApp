@@ -59,12 +59,13 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ResponeseDTO updateTask(UUID id, CreatedTaskDTO createdTaskDTO) {
+    public ResponceTaskDTO updateTask(UUID id, CreatedTaskDTO createdTaskDTO) {
         if (!taskRepository.existsById(id)) {
-            return ResponeseDTO.builder()
+            return ResponceTaskDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message(TASK_NOT_FOUND)
+                    .task(java.util.Optional.empty())
                     .build();
         }
         Task task = Task.builder()
@@ -76,10 +77,11 @@ public class TaskServiceImpl implements TaskService {
                 .isCompleted(createdTaskDTO.isCompleted())
                 .build();
         taskRepository.save(task);
-        return ResponeseDTO.builder()
-                .status(HttpStatus.UPGRADE_REQUIRED)
-                .statusCode(HttpStatus.UPGRADE_REQUIRED.value())
+        return ResponceTaskDTO.builder()
+                .status(HttpStatus.OK)
+                .statucCode(HttpStatus.OK.value())
                 .message(TASK_UPDATED)
+                .task(Optional.of(task))
                 .build();
     }
 

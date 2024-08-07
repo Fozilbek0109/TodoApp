@@ -12,7 +12,7 @@ import java.util.UUID;
 public interface TaskService {
     ResponceTaskDTO createTask(CreatedTaskDTO createdTaskDTO);
 
-    ResponeseDTO updateTask(UUID id, CreatedTaskDTO createdTaskDTO);
+    ResponceTaskDTO updateTask(UUID id, CreatedTaskDTO createdTaskDTO);
 
     ResponeseDTO deleteTask(UUID id);
 
