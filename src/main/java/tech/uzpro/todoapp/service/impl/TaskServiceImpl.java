@@ -9,6 +9,7 @@ import tech.uzpro.todoapp.model.payload.responce.ResponceTaskDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.model.payload.tasks.CreatedTaskDTO;
+import tech.uzpro.todoapp.model.payload.tasks.GetTaskDTO;
 import tech.uzpro.todoapp.repos.TaskRepository;
 import tech.uzpro.todoapp.repos.UserRepository;
 import tech.uzpro.todoapp.service.TaskService;
@@ -30,14 +31,16 @@ public class TaskServiceImpl implements TaskService {
     }
 
     @Override
-    public ResponeseDTO createTask(CreatedTaskDTO createdTaskDTO) {
+    public GetTaskDTO createTask(CreatedTaskDTO createdTaskDTO) {
         Optional<User> optionalUser = userRepository.findById(createdTaskDTO.getUserId());
         if (optionalUser.isEmpty()) {
-            return ResponeseDTO.builder()
-                    .status(HttpStatus.BAD_REQUEST)
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message(USER_NOT_FOUND)
-                    .build();
+            return GetTaskDTO.builder()
+                    .id(null)
+                    .title(null)
+                    .description(null)
+                    .priority(null)
+                    .dueDate(null)
+                    .completed(false).build();
         }
         Task task = Task.builder()
                 .title(createdTaskDTO.getTitle())
@@ -48,11 +51,13 @@ public class TaskServiceImpl implements TaskService {
                 .user(optionalUser.get())
                 .build();
         taskRepository.save(task);
-        return ResponeseDTO.builder()
-                .status(HttpStatus.CREATED)
-                .statusCode(HttpStatus.CREATED.value())
-                .message(TASK_CREATED)
-                .build();
+        return GetTaskDTO.builder()
+                .id(task.getId())
+                .title(task.getTitle())
+                .description(task.getDescription())
+                .priority(task.getPriority().name())
+                .dueDate(task.getDueDate())
+                .completed(task.isCompleted()).build();
     }
 
     @Override

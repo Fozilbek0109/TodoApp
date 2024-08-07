@@ -1,12 +1,12 @@
 package tech.uzpro.todoapp.rest;
 
 import jakarta.validation.Valid;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.uzpro.todoapp.model.payload.responce.ResponceTaskDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponceTasksDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.model.payload.tasks.CreatedTaskDTO;
+import tech.uzpro.todoapp.model.payload.tasks.GetTaskDTO;
 import tech.uzpro.todoapp.service.TaskService;
 
 import java.util.UUID;
@@ -22,7 +22,7 @@ private final TaskService taskService;
     }
 
     @PostMapping("/create")
-    public ResponeseDTO createTask(@RequestBody @Valid CreatedTaskDTO createdTaskDTO) {
+    public GetTaskDTO createTask(@RequestBody @Valid CreatedTaskDTO createdTaskDTO) {
         System.out.println("createdTaskDTO = " + createdTaskDTO);
         return taskService.createTask(createdTaskDTO);
     }
