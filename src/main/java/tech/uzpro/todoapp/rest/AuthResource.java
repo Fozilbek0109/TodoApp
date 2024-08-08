@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tech.uzpro.todoapp.model.payload.auth.LoginDTO;
 import tech.uzpro.todoapp.model.payload.auth.RegisterDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponceUserDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 import tech.uzpro.todoapp.service.AuthService;
 
@@ -18,7 +19,7 @@ public class AuthResource {
     }
 
     @PostMapping("/register")
-    public ResponeseDTO register(@RequestBody @Valid RegisterDTO dto) {
+    public ResponceUserDTO register(@RequestBody @Valid RegisterDTO dto) {
         return authService.register(dto);
     }
 

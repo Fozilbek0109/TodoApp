@@ -5,6 +5,7 @@ public class ResponseEnum {
     public static final String USER_NAME_IS_INVALID = "Username is invalid";
     public static final String EMAIL_IS_INVALID = "Email is invalid";
     public static final String USER_NAME_ALREADY_TAKEN = "Username is already taken";
+    public static final String EMAIL_ALREADY_TAKEN = "Email is already taken";
     public static final String INVALID_VERIFICATION_CODE = "Invalid verification code";
     public static final String VERIFICATION_CODE_SENT = "Verification code sent";
     public static final String USER_NOT_FOUND = "User not found";

@@ -10,7 +10,9 @@ import tech.uzpro.todoapp.domain.User;
 import tech.uzpro.todoapp.model.enums.RoleName;
 import tech.uzpro.todoapp.model.payload.auth.LoginDTO;
 import tech.uzpro.todoapp.model.payload.auth.RegisterDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponceUserDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponseUsersDTO;
 import tech.uzpro.todoapp.repos.UserRepository;
 import tech.uzpro.todoapp.service.AuthService;
 
@@ -38,44 +40,48 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ResponeseDTO register(RegisterDTO dto) {
-
+    public ResponceUserDTO register(RegisterDTO dto) {
         String passwordHash = passwordHash(dto.getPassword());
 
         if (!isUsernameValid(dto.getUsername())) {
-            return ResponeseDTO.builder()
+            return ResponceUserDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message(USER_NAME_IS_INVALID)
+                    .user(null)
                     .build();
         }
         if (!isEmailValid(dto.getEmail())) {
-            return ResponeseDTO.builder()
+            return ResponceUserDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message(EMAIL_IS_INVALID)
+                    .user(null)
                     .build();
 
         }
         if (!isPasswordValid(dto.getPassword())) {
-            return ResponeseDTO.builder()
+            return ResponceUserDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Password is invalid")
+                    .statucCode(HttpStatus.BAD_REQUEST.value())
+                    .message(INVALID_PASSWORD)
+                    .user(null)
                     .build();
         }
         if (userRepository.existsByUsernameIgnoreCase(dto.getUsername())) {
-            return ResponeseDTO.builder()
+            return ResponceUserDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
+                    .statucCode(HttpStatus.BAD_REQUEST.value())
                     .message(USER_NAME_ALREADY_TAKEN)
+                    .user(null)
                     .build();
         }
         if (userRepository.existsByEmailIgnoreCase(dto.getEmail())) {
-            return ResponeseDTO.builder()
+            return ResponceUserDTO.builder()
                     .status(HttpStatus.BAD_REQUEST)
-                    .statusCode(HttpStatus.BAD_REQUEST.value())
-                    .message("Email is already taken")
+                    .statucCode(HttpStatus.BAD_REQUEST.value())
+                    .message(EMAIL_ALREADY_TAKEN)
+                    .user(null)
                     .build();
         }
         int verificationCode = new Random().nextInt(100000, 999999);
@@ -89,10 +95,11 @@ public class AuthServiceImpl implements AuthService {
                 .build();
         userRepository.save(user);
         sendMailService.sendMail(dto.getEmail(), "UzPro.tech account verification code", "Your verification code is: " + verificationCode);
-        return ResponeseDTO.builder()
+        return ResponceUserDTO.builder()
                 .status(HttpStatus.CREATED)
-                .statusCode(HttpStatus.CREATED.value())
+                .statucCode(HttpStatus.CREATED.value())
                 .message(VERIFICATION_CODE_SENT)
+                .user(user)
                 .build();
     }
 

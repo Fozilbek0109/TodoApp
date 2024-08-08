@@ -3,11 +3,12 @@ package tech.uzpro.todoapp.service;
 import org.springframework.http.ResponseEntity;
 import tech.uzpro.todoapp.model.payload.auth.LoginDTO;
 import tech.uzpro.todoapp.model.payload.auth.RegisterDTO;
+import tech.uzpro.todoapp.model.payload.responce.ResponceUserDTO;
 import tech.uzpro.todoapp.model.payload.responce.ResponeseDTO;
 
 public interface AuthService {
 
-    ResponeseDTO register(RegisterDTO dto);
+    ResponceUserDTO register(RegisterDTO dto);
 
     ResponeseDTO verifyAccount(String email, Integer code);
 
